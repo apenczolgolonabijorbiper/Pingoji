@@ -16,9 +16,10 @@ No install is needed - just download the 2 files:
 The script is pinging 8.8.8.8 host (Google's DNS) by default, you can change it by editing the source code of VBS script.
 
 When it runs normally it shows the connection as stable - timing (in miliseconds) for the last 5 pings is shown as green blocks.
-![image](https://github.com/user-attachments/assets/eab83d84-89c8-4c2e-92fa-be945d5efeae)
 
-The connection is considered stable in case 5 consequitive ping request successfully returned a response.
+![image](https://github.com/user-attachments/assets/b6623acb-286e-4cee-ac6e-2c3d56806d4c)
+
+The connection is considered stable in case 5 consequitive ping requests successfully returned their responses, otherwise the window signals a problem.
 
 The darker green a block is the better connection you get.
 
