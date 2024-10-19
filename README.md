@@ -23,8 +23,7 @@ The connection is considered stable in case 5 consequitive ping requests success
 
 The darker green a block is the better connection you get.
 
-![image](https://github.com/user-attachments/assets/a5763b71-8091-4338-9c6d-43c70fd397fb)
-
+![image](https://github.com/user-attachments/assets/91e5d33e-26f7-4b1b-97dc-acbee03a3ce4)
 
 When you're loosing the connection the blocks are getting red and timing is indicated as "x" (as uknown).
 
