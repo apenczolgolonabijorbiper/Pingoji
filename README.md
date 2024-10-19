@@ -9,6 +9,12 @@ It provides visualization of network availability based on built-in ping of Wind
 
 Prerequisites: the AutoHotkey app is needed to make the IE window floating on top
 
+In case you don't want to install AutoHotKey (and have no Always On Top feature) just remove (or comment-out) the following line in the VBS script:
+
+_objShell.Run "SetAlwaysOnTop.ahk", 0, False  _
+
+The script will run further but the IE window will behave normally as any other window.
+
 No install is needed - just download the 2 files:
   * Pingoji.vbs - the main program - it runs the ping command for network monitoring and IE for visualization
   * SetAlwaysOnTop.ahk - force the IE window float on top of the screen
@@ -29,3 +35,6 @@ When you're loosing the connection the blocks are getting red and timing is indi
 
 ![image](https://github.com/user-attachments/assets/e28a82c6-37b4-4391-9dfa-5a6f5d1b8c0e)
 
+When run there is a "black window" open together with the IE - don't bother it, but let it run in the background (it just executes the ping).
+
+![image](https://github.com/user-attachments/assets/8171971e-8940-4483-aee5-bc531b643952)
