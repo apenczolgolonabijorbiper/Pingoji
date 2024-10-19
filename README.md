@@ -21,7 +21,7 @@ When it runs normally it shows the connection as stable - timing (in miliseconds
 
 The connection is considered stable in case 5 consequitive ping requests successfully returned their responses, otherwise the window signals a problem.
 
-The darker green a block is the better connection you get.
+The darker green a block is the better connection you get. The blocks are moving from left to right.
 
 ![image](https://github.com/user-attachments/assets/91e5d33e-26f7-4b1b-97dc-acbee03a3ce4)
 
