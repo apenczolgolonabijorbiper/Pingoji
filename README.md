@@ -11,7 +11,7 @@ Prerequisites: the AutoHotkey app is needed to make the IE window floating on to
 
 In case you don't want to install AutoHotKey (and have no Always On Top feature) just remove (or comment-out) the following line in the VBS script:
 
-_objShell.Run "SetAlwaysOnTop.ahk", 0, False  _
+> objShell.Run "SetAlwaysOnTop.ahk", 0, False 
 
 The script will run further but the IE window will behave normally as any other window.
 
