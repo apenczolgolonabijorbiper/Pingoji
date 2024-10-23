@@ -1,4 +1,4 @@
-# Pingoji
+# Pingoji - network monitoring tool
 Light VBS script to visualize ping results in small IE window floating always on top
 
 Ever being in a train, working on your PC and loosing network connection?
