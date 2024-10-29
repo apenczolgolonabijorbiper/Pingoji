@@ -20,8 +20,8 @@ objIE.Resizable = False
 
 objIE.Width = 80
 objIE.Height = 80
-objIE.Left = intHorizontal-100
-objIE.Top = intVertical-100
+objIE.Left = 100 'intHorizontal-100
+objIE.Top = 100 'intVertical-100
 
 objIE.navigate("about:blank")
 objIE.document.focus()
@@ -117,23 +117,26 @@ Do While objIE.Visible
         If InStr(strPingResult, "Reply from") > 0 and InStr(strPingResult, "unreachable") = 0 Then
             successCount = successCount + 1
 	    successTime =  Right(strPingResult, len(strPingResult)-inStr(strPingResult,"time=")-len("time=")+1)
-'            doc.getElementById("pingOutput").innerHTML = "+++" & successTime & "+++"
+            'doc.getElementById("pingOutput").innerHTML = "+++" & successTime & "+++"
 	    successTime =  Left(successTime, inStr(successTime, "ms TTL")-1)
 	    doc.getElementById("status1").innerHTML = successTime
         Else
             successCount = 0  ' Reset count if ping fails
 	    doc.getElementById("status1").innerHTML = "x"
 	    doc.getElementById("pingOutput").innerHTML = strPingResult
+            doc.getElementById("status1").style.backgroundColor = "red"
         End If
         
         ' Update status rectangle color based on success count
         If successCount >= MAX_SUCCESS_COUNT Then
-'            doc.getElementById("status1").style.backgroundColor = "green"
-		doc.getElementById("status1").style.backgroundColor = GetGreenToOrangeShade(successTime)
+  '            doc.getElementById("status1").style.backgroundColor = "green"
+	       doc.getElementById("status1").style.backgroundColor = GetGreenToOrangeShade(successTime)
             doc.getElementById("pingOutput").innerHtml = "Connection to " & remoteHost & " is stable."
         Else
-            doc.getElementById("status1").style.backgroundColor = "red"
-'            doc.getElementById("status1").innerHtml = "x"
+	    if successCount >= 0 then
+	        doc.getElementById("pingOutput").innerHtml = "Connection to " & remoteHost & " is unstable."
+	        doc.getElementById("status1").style.backgroundColor = "#FFBF00"
+	    end if
         End If
 
         
