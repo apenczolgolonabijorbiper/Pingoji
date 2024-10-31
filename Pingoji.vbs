@@ -83,7 +83,7 @@ doc.Write "</body></html>"
 Dim successCount
 successCount = 0
 successTime=""
-Const MAX_SUCCESS_COUNT = 5
+Const MAX_SUCCESS_COUNT = 3
 Dim startTime, thisTime
 startTime = Time()
 thisTime = Time()
