@@ -65,14 +65,18 @@ doc.Write "<html><head><title>Pingoji</title></head>"
 doc.write "<body onload=""setInterval(() => { const blinker = document.getElementById('pingOutput'); if (blinker.innerHTML === 'General failure.') { blinker.style.backgroundColor = blinker.style.backgroundColor === 'red' ? 'transparent' : 'red'; }}, 100)"">"
 doc.write "<table border=0 style='width: 100%; height: 100%;'>"
 doc.Write "<tr><td colspan=6 id='pingOutput' style='color: black; font-size: 10; text-align: center'></td></tr>"
-doc.Write "<tr style='height: 80%;'>"
+doc.Write "<tr style='height: 60%;'>"
 doc.Write "<td id='status' style='width: 1%; height: 100%; color: white; font-size: 13; text-align: center'></td>"
 doc.Write "<td id='status1' style='width: 20%; height: 100%; color: white; font-size: 13; text-align: center'></td>"
 doc.Write "<td id='status2' style='width: 20%; height: 100%; color: white; font-size: 13; text-align: center'></td>"
 doc.Write "<td id='status3' style='width: 20%; height: 100%; color: white; font-size: 13; text-align: center'></td>"
 doc.Write "<td id='status4' style='width: 20%; height: 100%; color: white; font-size: 13; text-align: center'></td>"
 doc.Write "<td id='status5' style='width: 19%; height: 100%; color: white; font-size: 13; text-align: center'></td>"
-doc.Write "</tr></table>"
+doc.Write "</tr>"
+doc.Write "<tr style='height: 30%;'>"
+doc.Write "<td colspan=6 id='info' style='width: 1%; height: 100%; color: white; font-size: 13; text-align: center'></td>"
+doc.Write "</tr>"
+doc.write "</table>"
 'doc.Write "<pre id='pingOutput'></pre>"
 doc.Write "</body></html>"
 
@@ -135,7 +139,9 @@ Do While objIE.Visible
         Else
 	    if successCount >= 0 then
 	        doc.getElementById("pingOutput").innerHtml = "Connection to " & remoteHost & " is unstable."
-	        doc.getElementById("status1").style.backgroundColor = "#FFBF00"
+		if doc.getElementById("status1").innerHTML <> "x" then
+	          doc.getElementById("status1").style.backgroundColor = "#FFBF00"
+		end if
 	    end if
         End If
 
