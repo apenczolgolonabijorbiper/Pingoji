@@ -19,7 +19,7 @@ objIE.StatusBar = False
 objIE.Resizable = False
 
 objIE.Width = 80
-objIE.Height = 80
+objIE.Height = 90
 objIE.Left = 100 'intHorizontal-100
 objIE.Top = 100 'intVertical-100
 
@@ -63,19 +63,17 @@ Loop
 Set doc = objIE.Document
 doc.Write "<html><head><title>Pingoji</title></head>"
 doc.write "<body onload=""setInterval(() => { const blinker = document.getElementById('pingOutput'); if (blinker.innerHTML === 'General failure.') { blinker.style.backgroundColor = blinker.style.backgroundColor === 'red' ? 'transparent' : 'red'; }}, 100)"">"
-doc.write "<table border=0 style='width: 100%; height: 100%;'>"
+doc.write "<table border=0 style='width: 100%; height: 100%;' cellspacing=1>"
 doc.Write "<tr><td colspan=6 id='pingOutput' style='color: black; font-size: 10; text-align: center'></td></tr>"
-doc.Write "<tr style='height: 60%;'>"
-doc.Write "<td id='status' style='width: 1%; height: 100%; color: white; font-size: 13; text-align: center'></td>"
-doc.Write "<td id='status1' style='width: 20%; height: 100%; color: white; font-size: 13; text-align: center'></td>"
-doc.Write "<td id='status2' style='width: 20%; height: 100%; color: white; font-size: 13; text-align: center'></td>"
-doc.Write "<td id='status3' style='width: 20%; height: 100%; color: white; font-size: 13; text-align: center'></td>"
-doc.Write "<td id='status4' style='width: 20%; height: 100%; color: white; font-size: 13; text-align: center'></td>"
-doc.Write "<td id='status5' style='width: 19%; height: 100%; color: white; font-size: 13; text-align: center'></td>"
+doc.Write "<tr style='height: 50%;'>"
+doc.Write "<td id='status' style='width: 1%; height: 100%; color: white; font-size: 11; text-align: center'></td>"
+doc.Write "<td id='status1' style='width: 20%; height: 100%; color: white; font-size: 11; text-align: center'></td>"
+doc.Write "<td id='status2' style='width: 20%; height: 100%; color: white; font-size: 11; text-align: center'></td>"
+doc.Write "<td id='status3' style='width: 20%; height: 100%; color: white; font-size: 11; text-align: center'></td>"
+doc.Write "<td id='status4' style='width: 20%; height: 100%; color: white; font-size: 11; text-align: center'></td>"
+doc.Write "<td id='status5' style='width: 19%; height: 100%; color: white; font-size: 11; text-align: center'></td>"
 doc.Write "</tr>"
-doc.Write "<tr style='height: 30%;'>"
-doc.Write "<td colspan=6 id='info' style='width: 1%; height: 100%; color: white; font-size: 13; text-align: center'></td>"
-doc.Write "</tr>"
+doc.Write "<tr><td colspan=6 id='info' style='width: 1%; color: black; font-size: 6; text-align: center'></td></tr>"
 doc.write "</table>"
 'doc.Write "<pre id='pingOutput'></pre>"
 doc.Write "</body></html>"
@@ -86,6 +84,10 @@ Dim successCount
 successCount = 0
 successTime=""
 Const MAX_SUCCESS_COUNT = 5
+Dim startTime, thisTime
+startTime = Time()
+thisTime = Time()
+barCount = 0
 
 
 WScript.Sleep 2000  ' Wait for IE to load the window
@@ -116,6 +118,11 @@ Do While objIE.Visible
         doc.getElementById("status2").innerHTML = doc.getElementById("status1").innerHTML
 
         strPingResult = objPing.StdOut.ReadLine()
+	thisTime = Time()
+	barCount=barCount+1
+        if barCount>50 Then
+            doc.getElementById("info").innerHTML = Left(doc.getElementById("info").innerHTML,InStrRev(doc.getElementById("info").innerHTML, "<font")-1)		
+	end if
         
         ' Check if the result contains "Reply from" indicating a successful ping
         If InStr(strPingResult, "Reply from") > 0 and InStr(strPingResult, "unreachable") = 0 Then
@@ -129,18 +136,23 @@ Do While objIE.Visible
 	    doc.getElementById("status1").innerHTML = "x"
 	    doc.getElementById("pingOutput").innerHTML = strPingResult
             doc.getElementById("status1").style.backgroundColor = "red"
+            doc.getElementById("info").innerHTML = "<font color=red>&#9608;</font>" & doc.getElementById("info").innerHTML
+	    startTime = Time()
         End If
         
         ' Update status rectangle color based on success count
         If successCount >= MAX_SUCCESS_COUNT Then
-  '            doc.getElementById("status1").style.backgroundColor = "green"
-	       doc.getElementById("status1").style.backgroundColor = GetGreenToOrangeShade(successTime)
-            doc.getElementById("pingOutput").innerHtml = "Connection to " & remoteHost & " is stable."
+	    greenColor = GetGreenToOrangeShade(successTime)
+            doc.getElementById("pingOutput").innerHtml = "Connection to " & remoteHost & " is stable (" & DateDiff("s", startTime, thisTime) & "s)."
+	    doc.getElementById("status1").style.backgroundColor = greenColor
+            doc.getElementById("info").innerHTML = "<font color='" & greenColor & "'>&#9608;</font>" & doc.getElementById("info").innerHTML 
         Else
 	    if successCount >= 0 then
 	        doc.getElementById("pingOutput").innerHtml = "Connection to " & remoteHost & " is unstable."
 		if doc.getElementById("status1").innerHTML <> "x" then
-	          doc.getElementById("status1").style.backgroundColor = "#FFBF00"
+			amberColor = "#FFBF00"
+	          doc.getElementById("status1").style.backgroundColor = amberColor
+                  doc.getElementById("info").innerHTML = "<font color='" & amberColor & "'>&#9608;</font>" & doc.getElementById("info").innerHTML
 		end if
 	    end if
         End If
