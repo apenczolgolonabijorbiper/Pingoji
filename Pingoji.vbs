@@ -5,6 +5,7 @@
 remoteHost = "8.8.8.8"
 Set objShell = CreateObject("WScript.Shell")
 Set objPing = objShell.Exec("cmd /c ping " & remoteHost & " -t")
+'Set objPing = objShell.Exec("cmd /c mode con: cols=10 lines=10 && ping " & remoteHost & " -t")
 'Set objPing = objShell.Exec("cmd.exe /c start /b cmd /c ping " & remoteHost & " -t > nul")
 Set objIE = CreateObject("InternetExplorer.Application")
 
@@ -19,7 +20,7 @@ objIE.StatusBar = False
 objIE.Resizable = False
 
 objIE.Width = 80
-objIE.Height = 90
+objIE.Height = 102
 objIE.Left = 100 'intHorizontal-100
 objIE.Top = 100 'intVertical-100
 
@@ -62,7 +63,7 @@ Do While objIE.Busy
 Loop
 Set doc = objIE.Document
 doc.Write "<html><head><title>Pingoji</title></head>"
-doc.write "<body onload=""setInterval(() => { const blinker = document.getElementById('pingOutput'); if (blinker.innerHTML === 'General failure.') { blinker.style.backgroundColor = blinker.style.backgroundColor === 'red' ? 'transparent' : 'red'; }}, 100)"">"
+doc.write "<body>"
 doc.write "<table border=0 style='width: 100%; height: 100%;' cellspacing=1>"
 doc.Write "<tr><td colspan=6 id='pingOutput' style='color: black; font-size: 10; text-align: center'></td></tr>"
 doc.Write "<tr style='height: 50%;'>"
@@ -73,26 +74,23 @@ doc.Write "<td id='status3' style='width: 20%; height: 100%; color: white; font-
 doc.Write "<td id='status4' style='width: 20%; height: 100%; color: white; font-size: 11; text-align: center'></td>"
 doc.Write "<td id='status5' style='width: 19%; height: 100%; color: white; font-size: 11; text-align: center'></td>"
 doc.Write "</tr>"
-doc.Write "<tr><td colspan=6 id='info' style='width: 1%; color: black; font-size: 6; text-align: center'></td></tr>"
+doc.Write "<tr><td colspan=6 id='info' style='width: 1%; color: black; font-size: 5; text-align: left'></td></tr>"
+doc.Write "<tr><td colspan=6 id='info2' style='width: 1%; color: black; font-size: 3; text-align: left'></td></tr>"
 doc.write "</table>"
-'doc.Write "<pre id='pingOutput'></pre>"
 doc.Write "</body></html>"
 
-
 ' Variables to track ping success
-Dim successCount
 successCount = 0
-successTime=""
+successTime = ""
 Const MAX_SUCCESS_COUNT = 3
-Dim startTime, thisTime
 startTime = Time()
 thisTime = Time()
 barCount = 0
+bar2Count = 0
+bar2Sum = 0
 
-
-WScript.Sleep 2000  ' Wait for IE to load the window
+WScript.Sleep 1000  ' Wait for IE to load the window
 objShell.Run "SetAlwaysOnTop.ahk", 0, False  ' Change path to your AutoHotkey script
-
 
 Do While objIE.Visible
     ' Capture output from ping command
@@ -100,7 +98,6 @@ Do While objIE.Visible
 	
 	On Error Resume Next
         ' Update the ping results in the HTML window
-'        doc.getElementById("pingOutput").innerHTML = doc.getElementById("pingOutput").innerHTML & strPingResult & vbCrLf
         
         if doc.getElementById("status").style.backgroundColor = "blue" then
 		doc.getElementById("status").style.backgroundColor = "white"
@@ -120,17 +117,27 @@ Do While objIE.Visible
         strPingResult = objPing.StdOut.ReadLine()
 	thisTime = Time()
 	barCount=barCount+1
-        if barCount>50 Then
+	bar2Count=bar2Count+1
+
+        if barCount>60 Then
             doc.getElementById("info").innerHTML = Left(doc.getElementById("info").innerHTML,InStrRev(doc.getElementById("info").innerHTML, "<font")-1)		
 	end if
-        
-        ' Check if the result contains "Reply from" indicating a successful ping
-        If InStr(strPingResult, "Reply from") > 0 and InStr(strPingResult, "unreachable") = 0 Then
+
+	if bar2Count mod 60 = 0 Then
+	    if bar2Count > 3600 then
+              doc.getElementById("info2").innerHTML = Left(doc.getElementById("info2").innerHTML,InStrRev(doc.getElementById("info2").innerHTML, "<font")-1)		
+	    end if
+            doc.getElementById("info2").innerHTML = "<font color='" & GetGreenToOrangeShade(bar2Sum/60) & "'>&#9608;</font>" & doc.getElementById("info2").innerHTML
+	    bar2Sum=0
+	end if
+
+        ' Check if the result contains remoteHost and TTL indicating a successful ping
+        If InStr(strPingResult, remoteHost) > 0 and InStr(strPingResult, "TTL") > 0 Then
             successCount = successCount + 1
 	    successTime =  Right(strPingResult, len(strPingResult)-inStr(strPingResult,"time=")-len("time=")+1)
-            'doc.getElementById("pingOutput").innerHTML = "+++" & successTime & "+++"
 	    successTime =  Left(successTime, inStr(successTime, "ms TTL")-1)
 	    doc.getElementById("status1").innerHTML = successTime
+	    bar2Sum = bar2Sum + successTime
         Else
             successCount = 0  ' Reset count if ping fails
 	    doc.getElementById("status1").innerHTML = "x"
@@ -138,6 +145,7 @@ Do While objIE.Visible
             doc.getElementById("status1").style.backgroundColor = "red"
             doc.getElementById("info").innerHTML = "<font color=red>&#9608;</font>" & doc.getElementById("info").innerHTML
 	    startTime = Time()
+	    bar2Sum = bar2Sum + 1000
         End If
         
         ' Update status rectangle color based on success count
@@ -146,7 +154,7 @@ Do While objIE.Visible
             doc.getElementById("pingOutput").innerHtml = "Connection to " & remoteHost & " is stable (" & DateDiff("s", startTime, thisTime) & "s)."
 	    doc.getElementById("status1").style.backgroundColor = greenColor
             doc.getElementById("info").innerHTML = "<font color='" & greenColor & "'>&#9608;</font>" & doc.getElementById("info").innerHTML 
-        Else
+        Els
 	    if successCount >= 0 then
 	        doc.getElementById("pingOutput").innerHtml = "Connection to " & remoteHost & " is unstable."
 		if doc.getElementById("status1").innerHTML <> "x" then
@@ -157,28 +165,20 @@ Do While objIE.Visible
 	    end if
         End If
 
-        
-        ' Scroll the window to show the latest ping result
-'        doc.ParentWindow.scrollTo 0, doc.body.scrollHeight
     Else
 	objPing = null
 	doc.getElementById("pingOutput").innerHTML = "Ping crashed - need a restart."
     End If
     
     ' Pause for a short time to prevent freezing
-    WScript.Sleep 100
+    WScript.Sleep 10
 
 If Err.Number <> 0 Then
 '  WScript.Echo "Error in SomeCodeHere: " & Err.Number & ", " & Err.Source & ", " & Err.Description
   Err.Clear
 
-'objPing.SendKeys "% C"
-'objShell.SendKeys("% C")
-objPing.Terminate()
-objPing.Quit()
-objShell.Terminate()
-objShell.Quit()
 MsgBox("Thanks for using Pingoji")
+objIE.Terminate()
 Set objIE = Nothing
 Set objPing = Nothing
 Set objShell = Nothing
@@ -187,19 +187,3 @@ Set objShell = Nothing
 End If
 
 Loop
-
-'MsgBox("not visible1")
-
-objIE.Quit
-objPing.Terminate()
-objPing.Quit()
-'objPing.SendKeys("% C")
-objShell.Terminate()
-objShell.Quit()
-'objShell.SendKeys("% C")
-Set objIE = Nothing
-Set objPing = Nothing
-Set objShell = Nothing
-'MsgBox("not visible2")
-'WScript.Terminate
-'WScript.Quit
