@@ -20,7 +20,7 @@ objIE.StatusBar = False
 objIE.Resizable = False
 
 objIE.Width = 80
-objIE.Height = 102
+objIE.Height = 100
 objIE.Left = 100 'intHorizontal-100
 objIE.Top = 100 'intVertical-100
 
@@ -67,12 +67,12 @@ doc.write "<body>"
 doc.write "<table border=0 style='width: 100%; height: 100%;' cellspacing=1>"
 doc.Write "<tr><td colspan=6 id='pingOutput' style='color: black; font-size: 10; text-align: center'></td></tr>"
 doc.Write "<tr style='height: 50%;'>"
-doc.Write "<td id='status' style='width: 1%; height: 100%; color: white; font-size: 11; text-align: center'></td>"
-doc.Write "<td id='status1' style='width: 20%; height: 100%; color: white; font-size: 11; text-align: center'></td>"
-doc.Write "<td id='status2' style='width: 20%; height: 100%; color: white; font-size: 11; text-align: center'></td>"
-doc.Write "<td id='status3' style='width: 20%; height: 100%; color: white; font-size: 11; text-align: center'></td>"
-doc.Write "<td id='status4' style='width: 20%; height: 100%; color: white; font-size: 11; text-align: center'></td>"
-doc.Write "<td id='status5' style='width: 19%; height: 100%; color: white; font-size: 11; text-align: center'></td>"
+doc.Write "<td id='status' style='width: 1%; height: 100%; color: white; font-size: 10; text-align: center'></td>"
+doc.Write "<td id='status1' style='width: 20%; height: 100%; color: white; font-size: 10; text-align: center'></td>"
+doc.Write "<td id='status2' style='width: 20%; height: 100%; color: white; font-size: 10; text-align: center'></td>"
+doc.Write "<td id='status3' style='width: 20%; height: 100%; color: white; font-size: 10; text-align: center'></td>"
+doc.Write "<td id='status4' style='width: 20%; height: 100%; color: white; font-size: 10; text-align: center'></td>"
+doc.Write "<td id='status5' style='width: 19%; height: 100%; color: white; font-size: 10; text-align: center'></td>"
 doc.Write "</tr>"
 doc.Write "<tr><td colspan=6 id='info' style='width: 1%; color: black; font-size: 5; text-align: left'></td></tr>"
 doc.Write "<tr><td colspan=6 id='info2' style='width: 1%; color: black; font-size: 3; text-align: left'></td></tr>"
@@ -124,7 +124,7 @@ Do While objIE.Visible
 	end if
 
 	if bar2Count mod 60 = 0 Then
-	    if bar2Count > 3600 then
+	    if bar2Count > 6000 then
               doc.getElementById("info2").innerHTML = Left(doc.getElementById("info2").innerHTML,InStrRev(doc.getElementById("info2").innerHTML, "<font")-1)		
 	    end if
             doc.getElementById("info2").innerHTML = "<font color='" & GetGreenToOrangeShade(bar2Sum/60) & "'>&#9608;</font>" & doc.getElementById("info2").innerHTML
@@ -154,7 +154,7 @@ Do While objIE.Visible
             doc.getElementById("pingOutput").innerHtml = "Connection to " & remoteHost & " is stable (" & DateDiff("s", startTime, thisTime) & "s)."
 	    doc.getElementById("status1").style.backgroundColor = greenColor
             doc.getElementById("info").innerHTML = "<font color='" & greenColor & "'>&#9608;</font>" & doc.getElementById("info").innerHTML 
-        Els
+        Else
 	    if successCount >= 0 then
 	        doc.getElementById("pingOutput").innerHtml = "Connection to " & remoteHost & " is unstable."
 		if doc.getElementById("status1").innerHTML <> "x" then
