@@ -18,14 +18,22 @@ objIE.MenuBar = False
 objIE.ToolBar = False
 objIE.StatusBar = False
 objIE.Resizable = False
+objIE.Silent = True
+'objIE.TheaterMode = False
 
-objIE.Width = 80
-objIE.Height = 100
-objIE.Left = 100 'intHorizontal-100
-objIE.Top = 100 'intVertical-100
+objIE.Width = 1 'minium IE width 250
+objIE.Height = 1 'minium IE width 100
 
 objIE.navigate("about:blank")
 objIE.document.focus()
+
+for each vid in getobject("winmgmts:").instancesof("Win32_VideoController")
+	intHorizontal = vid.CurrentHorizontalResolution 
+	intVertical = vid.currentVerticalResolution
+next
+
+objIE.Left = intHorizontal-objIE.Width
+objIE.Top = intVertical-objIE.Height-100
 
 Function GetGreenToOrangeShade(value)
     Dim red, green, blue, colorShade
@@ -62,27 +70,27 @@ Do While objIE.Busy
     WScript.Sleep 100
 Loop
 Set doc = objIE.Document
-doc.Write "<html><head><title>Pingoji</title></head>"
+doc.Write "<html><head><title>&#8584; Pingoji &#9637;</title></head>"
 doc.write "<body>"
 doc.write "<table border=0 style='width: 100%; height: 100%;' cellspacing=1>"
-doc.Write "<tr><td colspan=6 id='pingOutput' style='color: black; font-size: 10; text-align: center'></td></tr>"
-doc.Write "<tr style='height: 50%;'>"
-doc.Write "<td id='status' style='width: 1%; height: 100%; color: white; font-size: 10; text-align: center'></td>"
-doc.Write "<td id='status1' style='width: 20%; height: 100%; color: white; font-size: 10; text-align: center'></td>"
-doc.Write "<td id='status2' style='width: 20%; height: 100%; color: white; font-size: 10; text-align: center'></td>"
-doc.Write "<td id='status3' style='width: 20%; height: 100%; color: white; font-size: 10; text-align: center'></td>"
-doc.Write "<td id='status4' style='width: 20%; height: 100%; color: white; font-size: 10; text-align: center'></td>"
-doc.Write "<td id='status5' style='width: 19%; height: 100%; color: white; font-size: 10; text-align: center'></td>"
+doc.Write "<tr><td colspan=6 id='pingOutput' style='color: black; font-size: 11; text-align: center'></td></tr>"
+doc.Write "<tr style='height: 1%;'>"
+doc.Write "<td id='status' style='width: 1%; height: 90%; color: white; font-size: 9; text-align: center'></td>"
+doc.Write "<td id='status1' style='width: 10%; height: 90%; color: white; font-size: 9; text-align: center'></td>"
+doc.Write "<td id='status2' style='width: 10%; height: 90%; color: white; font-size: 9; text-align: center'></td>"
+doc.Write "<td id='status3' style='width: 10%; height: 90%; color: white; font-size: 9; text-align: center'></td>"
+doc.Write "<td id='status4' style='width: 10%; height: 90%; color: white; font-size: 9; text-align: center'></td>"
+doc.Write "<td id='status5' style='width: 10%; height: 90%; color: white; font-size: 9; text-align: center'></td>"
 doc.Write "</tr>"
-doc.Write "<tr><td colspan=6 id='info' style='width: 1%; color: black; font-size: 5; text-align: left'></td></tr>"
-doc.Write "<tr><td colspan=6 id='info2' style='width: 1%; color: black; font-size: 3; text-align: left'></td></tr>"
+doc.Write "<tr><td colspan=6 id='info' style='width: 1%; color: black; font-size: 5; text-align: left'>&#8658;</td></tr>"
+doc.Write "<tr><td colspan=6 id='info2' style='width: 1%; color: black; font-size: 3; text-align: left'>&#8658;</td></tr>"
 doc.write "</table>"
 doc.Write "</body></html>"
 
 ' Variables to track ping success
 successCount = 0
 successTime = ""
-Const MAX_SUCCESS_COUNT = 3
+Const MAX_SUCCESS_COUNT = 3 ' when connection becomes stable
 startTime = Time()
 thisTime = Time()
 barCount = 0
@@ -119,12 +127,12 @@ Do While objIE.Visible
 	barCount=barCount+1
 	bar2Count=bar2Count+1
 
-        if barCount>60 Then
+        if barCount>(objIE.Width/4.1) Then
             doc.getElementById("info").innerHTML = Left(doc.getElementById("info").innerHTML,InStrRev(doc.getElementById("info").innerHTML, "<font")-1)		
 	end if
 
 	if bar2Count mod 60 = 0 Then
-	    if bar2Count > 6000 then
+	    if bar2Count > (objIE.Width/3.3)*10 then
               doc.getElementById("info2").innerHTML = Left(doc.getElementById("info2").innerHTML,InStrRev(doc.getElementById("info2").innerHTML, "<font")-1)		
 	    end if
             doc.getElementById("info2").innerHTML = "<font color='" & GetGreenToOrangeShade(bar2Sum/60) & "'>&#9608;</font>" & doc.getElementById("info2").innerHTML
