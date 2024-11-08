@@ -1,5 +1,5 @@
 # &#8584; Pingoji - network monitoring tool
-Light VBS script to visualize ping results in small IE window floating always on top
+Light VBS script to visualize ping results in small IE window floating always on top - network monitoring tool.
 
 Ever being in a train, working on your PC and loosing network connection?
 
