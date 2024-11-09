@@ -22,7 +22,7 @@ objIE.Silent = True
 'objIE.TheaterMode = False
 
 objIE.Width = 1 'minium IE width 250
-objIE.Height = 1 'minium IE width 100
+objIE.Height = 1 'minium IE height 100
 
 objIE.navigate("about:blank")
 objIE.document.focus()
@@ -33,7 +33,7 @@ for each vid in getobject("winmgmts:").instancesof("Win32_VideoController")
 next
 
 objIE.Left = intHorizontal-objIE.Width
-objIE.Top = intVertical-objIE.Height-100
+objIE.Top = intVertical-objIE.Height-80
 
 Function GetGreenToOrangeShade(value)
     Dim red, green, blue, colorShade
@@ -98,7 +98,7 @@ bar2Count = 0
 bar2Sum = 0
 
 WScript.Sleep 1000  ' Wait for IE to load the window
-objShell.Run "SetAlwaysOnTop.ahk", 0, False  ' Change path to your AutoHotkey script
+'objShell.Run "SetAlwaysOnTop.ahk", 0, False  ' Change path to your AutoHotkey script
 
 Do While objIE.Visible
     ' Capture output from ping command
@@ -132,7 +132,7 @@ Do While objIE.Visible
 	end if
 
 	if bar2Count mod 60 = 0 Then
-	    if bar2Count > (objIE.Width/3.3)*10 then
+	    if bar2Count > (objIE.Width/3.3)*80 then
               doc.getElementById("info2").innerHTML = Left(doc.getElementById("info2").innerHTML,InStrRev(doc.getElementById("info2").innerHTML, "<font")-1)		
 	    end if
             doc.getElementById("info2").innerHTML = "<font color='" & GetGreenToOrangeShade(bar2Sum/60) & "'>&#9608;</font>" & doc.getElementById("info2").innerHTML
