@@ -11,6 +11,10 @@ param(
 
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
+$PingojiBuildDate = '2026-08-19'
+$PingojiAuthor = 'apenczolgolonabijorbiper'
+$PingojiGitHubUrl = 'https://github.com/apenczolgolonabijorbiper/Pingoji'
+$pingojiSymbol = [char]0x2188
 
 if ([Threading.Thread]::CurrentThread.ApartmentState -ne 'STA') {
     $engine = (Get-Process -Id $PID).Path
@@ -127,7 +131,7 @@ $titleLabel.Size = New-Object Drawing.Size 245, 18
 $titleLabel.ForeColor = [Drawing.Color]::WhiteSmoke
 $titleLabel.Font = New-Object Drawing.Font 'Segoe UI', 7.5
 $titleLabel.TextAlign = [Drawing.ContentAlignment]::MiddleLeft
-$titleLabel.Text = 'Pingoji'
+$titleLabel.Text = "$pingojiSymbol Pingoji"
 $header.Controls.Add($titleLabel)
 
 $closeLabel = New-Object Windows.Forms.Label
@@ -225,10 +229,13 @@ $historyPanel.Add_Paint({
     $items = @($state.Samples)
     $width = 4
     $max = [Math]::Floor($sender.ClientSize.Width / $width)
-    $start = [Math]::Max(0, $items.Count - $max)
-    for ($i = $start; $i -lt $items.Count; $i++) {
-        $brush = New-Object Drawing.SolidBrush $items[$i]
-        $x = ($i - $start) * $width
+    $visible = [Math]::Min($items.Count, $max)
+    # New samples enter on the left; existing samples roll to the right,
+    # matching the direction of the five latency blocks.
+    for ($i = 0; $i -lt $visible; $i++) {
+        $itemIndex = $items.Count - 1 - $i
+        $brush = New-Object Drawing.SolidBrush $items[$itemIndex]
+        $x = $i * $width
         $e.Graphics.FillRectangle($brush, $x, 0, $width - 1, $sender.ClientSize.Height)
         $brush.Dispose()
     }
@@ -263,6 +270,7 @@ $exportRangesItem = $exportItem.DropDownItems.Add('Availability ranges (CSV)...'
 $startupItem = $menu.Items.Add('Start with Windows')
 $startupItem.CheckOnClick = $false
 [void]$menu.Items.Add('-')
+$aboutItem = $menu.Items.Add('About Pingoji')
 $exitItem = $menu.Items.Add('Exit')
 $tray.ContextMenuStrip = $menu
 
@@ -361,6 +369,46 @@ function Reset-PingojiSession {
     $historyPanel.Invalidate(); $minutePanel.Invalidate()
 }
 
+function Show-PingojiAbout {
+    $about = New-Object Windows.Forms.Form
+    $about.Text = 'About Pingoji'
+    $about.ClientSize = New-Object Drawing.Size 360, 150
+    $about.FormBorderStyle = [Windows.Forms.FormBorderStyle]::FixedDialog
+    $about.MaximizeBox = $false; $about.MinimizeBox = $false
+    $about.ShowInTaskbar = $false; $about.TopMost = $true
+    $about.StartPosition = [Windows.Forms.FormStartPosition]::CenterParent
+    $about.Font = New-Object Drawing.Font 'Segoe UI', 9
+
+    $name = New-Object Windows.Forms.Label
+    $name.Location = New-Object Drawing.Point 16, 13
+    $name.Size = New-Object Drawing.Size 328, 25
+    $name.Font = New-Object Drawing.Font 'Segoe UI Semibold', 13
+    $name.Text = "$pingojiSymbol Pingoji - network availability monitor"
+
+    $details = New-Object Windows.Forms.Label
+    $details.Location = New-Object Drawing.Point 17, 45
+    $details.Size = New-Object Drawing.Size 326, 43
+    $details.Text = "Build date: $PingojiBuildDate`r`nAuthor: $PingojiAuthor"
+
+    $github = New-Object Windows.Forms.LinkLabel
+    $github.Location = New-Object Drawing.Point 17, 91
+    $github.Size = New-Object Drawing.Size 326, 20
+    $github.Text = $PingojiGitHubUrl
+    $github.Add_LinkClicked({
+        try { Start-Process $PingojiGitHubUrl } catch {
+            [Windows.Forms.MessageBox]::Show("Could not open GitHub:`n$($_.Exception.Message)", 'Pingoji', 'OK', 'Error') | Out-Null
+        }
+    })
+
+    $close = New-Object Windows.Forms.Button
+    $close.Location = New-Object Drawing.Point 269, 117
+    $close.Size = New-Object Drawing.Size 75, 25
+    $close.Text = 'Close'; $close.DialogResult = [Windows.Forms.DialogResult]::OK
+    $about.AcceptButton = $close; $about.CancelButton = $close
+    $about.Controls.AddRange(@($name, $details, $github, $close))
+    try { [void]$about.ShowDialog($form) } finally { $about.Dispose() }
+}
+
 $startupRegistryPath = 'Software\Microsoft\Windows\CurrentVersion\Run'
 $startupValueName = 'Pingoji'
 $startupKey = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey($startupRegistryPath, $false)
@@ -435,6 +483,7 @@ $startupItem.Add_Click({
         if ($null -ne $key) { $key.Dispose() }
     }
 })
+$aboutItem.Add_Click({ Show-PingojiAbout })
 $exitItem.Add_Click({ $state.Exiting = $true; $form.Close() })
 $form.Add_FormClosing({
     param($sender, $e)
